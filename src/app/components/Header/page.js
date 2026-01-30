@@ -36,7 +36,7 @@ export default function Header() {
                   : 'text-gray-600 hover:text-gray-900'
               }`}
             >
-              Prototype 1
+              3D Learning
             </Link>
 
             <Link
@@ -47,7 +47,7 @@ export default function Header() {
                   : 'text-gray-600 hover:text-gray-900'
               }`}
             >
-              Prototype 2
+              AI Avatar Command
             </Link>
           </div>
         </div>
