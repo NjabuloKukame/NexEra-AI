@@ -22,16 +22,34 @@ export async function POST(req) {
           messages: [
             {
               role: 'system',
-              content:
-                'You explain workplace safety equipment clearly and concisely.',
+              content: `
+                You are a workplace safety assistant.
+
+                Your task:
+                1. Classify the object into ONE of these keys only:
+                  - fire_extinguisher
+                  - drill
+                  - toolbox
+                  - wet_floor_sign
+                  - measuring_tape
+                  - unsupported
+
+                2. Provide a short educational summary (max 3 sentences).
+
+                Return ONLY valid JSON in this format:
+                {
+                  "assetKey": "...",
+                  "summary": "..."
+                }
+                `,
             },
             {
               role: 'user',
-              content: `Explain what a ${objectName} is and how it is used in workplace safety training. Keep it under 3 sentences.`,
+              content: objectName,
             },
           ],
-          temperature: 0.7,
-          max_tokens: 120,
+          temperature: 0.3,
+          max_tokens: 150,
         }),
       }
     );
@@ -46,12 +64,19 @@ export async function POST(req) {
     }
 
     const data = await response.json();
+    const raw = data?.choices?.[0]?.message?.content;
 
-    const summary =
-      data?.choices?.[0]?.message?.content?.trim() ??
-      'No summary available.';
+    let parsed;
+    try {
+      parsed = JSON.parse(raw);
+    } catch {
+      parsed = {
+        assetKey: 'unsupported',
+        summary: 'No summary available.',
+      };
+    }
 
-    return Response.json({ summary });
+    return Response.json(parsed);
   } catch (err) {
     console.error('AI summary error:', err);
     return Response.json(

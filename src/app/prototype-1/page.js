@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Upload, RotateCw, ZoomIn, RefreshCw } from 'lucide-react';
 import ModelViewer from '../components/ModelViewer/ModelViewer';
+import { ASSET_MAP } from '../lib/assets';
 
 export default function Prototype1() {
     const [textInput, setTextInput] = useState('');
@@ -11,15 +12,13 @@ export default function Prototype1() {
 
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
+    const [viewerMessage, setViewerMessage] = useState(
+        'Generate an asset to view it here'
+    );
 
     const handleGenerate = async () => {
-        if (!textInput.trim()) {
-            setError('Please describe an object.');
-            return;
-        }
-
-        setError('');
         setIsLoading(true);
+        setError('');
         setAiSummary('');
         setModelUrl(null);
 
@@ -30,15 +29,21 @@ export default function Prototype1() {
                 body: JSON.stringify({ objectName: textInput }),
             });
 
-            if (!response.ok) {
-                throw new Error('AI request failed');
-            }
-
             const data = await response.json();
+
             setAiSummary(data.summary);
 
-        } catch (err) {
-            setError('Something went wrong while generating the summary.');
+            if (data.assetKey !== 'unsupported' && ASSET_MAP[data.assetKey]) {
+                setModelUrl(ASSET_MAP[data.assetKey].url);
+                setViewerMessage('');
+            } else {
+                setModelUrl(null);
+                setViewerMessage(
+                    'This object is not supported yet. Try a fire extinguisher or wet floor sign.'
+                );
+            }
+        } catch {
+            setError('Something went wrong.');
         } finally {
             setIsLoading(false);
         }
@@ -68,7 +73,7 @@ export default function Prototype1() {
                                     type="text"
                                     value={textInput}
                                     onChange={(e) => setTextInput(e.target.value)}
-                                    placeholder="e.g. yellow hard hat, fire extinguisher"
+                                    placeholder="e.g. Drill, Fire Extinguisher, Wet Floor Sign, Measuring Tape"
                                     className="w-full px-4 py-3 text-black border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
                                 />
                             </div>
@@ -146,7 +151,7 @@ export default function Prototype1() {
                                 <ModelViewer modelUrl={modelUrl} />
                             ) : (
                                 <p className="text-gray-500 flex items-center justify-center h-full">
-                                    Generate an asset to view it here
+                                    {viewerMessage}
                                 </p>
                             )}
                         </div>
