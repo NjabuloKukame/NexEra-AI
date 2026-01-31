@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useRef } from 'react';
-import { Upload, RotateCw, ZoomIn, RefreshCw } from 'lucide-react';
+import { Upload, RotateCw, ZoomIn, RefreshCw, ZoomOut } from 'lucide-react';
 import ModelViewer from '../components/ModelViewer/ModelViewer';
 import { ASSET_MAP } from '../lib/assets';
 
@@ -144,9 +144,17 @@ export default function Prototype1() {
                                 </button>
 
                                 <button
+                                    onClick={() => viewerRef.current?.zoomOut()}
+                                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                                    title="Zoom Out"
+                                >
+                                    <ZoomOut className="w-5 h-5 text-gray-600" />
+                                </button>
+
+                                <button
                                     onClick={() => viewerRef.current?.zoomIn()}
                                     className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                                    title="Zoom"
+                                    title="Zoom In"
                                 >
                                     <ZoomIn className="w-5 h-5 text-gray-600" />
                                 </button>

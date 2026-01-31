@@ -29,6 +29,12 @@ const ModelViewer = forwardRef(function ModelViewer({ modelUrl }, ref) {
       controlsRef.current.update();
     },
 
+    zoomOut: () => {
+      if (!controlsRef.current) return;
+      controlsRef.current.dollyIn(1.2);
+      controlsRef.current.update();
+    },
+
     reset: () => {
       if (!controlsRef.current) return;
       controlsRef.current.reset();
@@ -42,7 +48,7 @@ const ModelViewer = forwardRef(function ModelViewer({ modelUrl }, ref) {
       <ambientLight intensity={0.7} />
       <directionalLight position={[5, 5, 5]} intensity={1} />
       <Model url={modelUrl} />
-      <OrbitControls ref={controlsRef} enablePan={false} />
+      <OrbitControls ref={controlsRef} enablePan={false} minDistance={1} maxDistance={8}/>
     </Canvas>
   );
 });
