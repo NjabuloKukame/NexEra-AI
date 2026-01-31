@@ -1,5 +1,6 @@
 'use client';
 
+import { forwardRef, useImperativeHandle, useRef } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, useGLTF } from '@react-three/drei';
 
@@ -8,18 +9,42 @@ function Model({ url }) {
   return <primitive object={scene} />;
 }
 
-export default function ModelViewer({ modelUrl }) {
+const ModelViewer = forwardRef(function ModelViewer({ modelUrl }, ref) {
+  const controlsRef = useRef();
+
+  useImperativeHandle(ref, () => ({
+    rotate: () => {
+      if (!controlsRef.current) return;
+      controlsRef.current.autoRotate = !controlsRef.current.autoRotate;
+    },
+
+    stopRotate: () => {
+      if (!controlsRef.current) return;
+      controlsRef.current.autoRotate = false;
+    },
+
+    zoomIn: () => {
+      if (!controlsRef.current) return;
+      controlsRef.current.dollyOut(1.2);
+      controlsRef.current.update();
+    },
+
+    reset: () => {
+      if (!controlsRef.current) return;
+      controlsRef.current.reset();
+    },
+  }));
+
   if (!modelUrl) return null;
 
   return (
-    <Canvas
-      camera={{ position: [0, 1.5, 3], fov: 50 }}
-      className="w-full h-full"
-    >
+    <Canvas camera={{ position: [0, 1.5, 3], fov: 50 }}>
       <ambientLight intensity={0.7} />
       <directionalLight position={[5, 5, 5]} intensity={1} />
       <Model url={modelUrl} />
-      <OrbitControls enablePan={false} />
+      <OrbitControls ref={controlsRef} enablePan={false} />
     </Canvas>
   );
-}
+});
+
+export default ModelViewer;

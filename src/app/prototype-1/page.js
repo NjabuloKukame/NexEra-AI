@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Upload, RotateCw, ZoomIn, RefreshCw } from 'lucide-react';
 import ModelViewer from '../components/ModelViewer/ModelViewer';
 import { ASSET_MAP } from '../lib/assets';
@@ -15,6 +15,7 @@ export default function Prototype1() {
     const [viewerMessage, setViewerMessage] = useState(
         'Generate an asset to view it here'
     );
+    const viewerRef = useRef(null);
 
     const handleGenerate = async () => {
         setIsLoading(true);
@@ -134,13 +135,27 @@ export default function Prototype1() {
                                 3D Viewer
                             </h2>
                             <div className="flex gap-2">
-                                <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors" title="Rotate">
+                                <button
+                                    onClick={() => viewerRef.current?.rotate()}
+                                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                                    title="Rotate"
+                                >
                                     <RotateCw className="w-5 h-5 text-gray-600" />
                                 </button>
-                                <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors" title="Zoom">
+
+                                <button
+                                    onClick={() => viewerRef.current?.zoomIn()}
+                                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                                    title="Zoom"
+                                >
                                     <ZoomIn className="w-5 h-5 text-gray-600" />
                                 </button>
-                                <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors" title="Reset">
+
+                                <button
+                                    onClick={() => viewerRef.current?.reset()}
+                                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                                    title="Reset"
+                                >
                                     <RefreshCw className="w-5 h-5 text-gray-600" />
                                 </button>
                             </div>
@@ -148,7 +163,7 @@ export default function Prototype1() {
 
                         <div className="aspect-square rounded-lg overflow-hidden bg-gray-100">
                             {modelUrl ? (
-                                <ModelViewer modelUrl={modelUrl} />
+                                <ModelViewer ref={viewerRef} modelUrl={modelUrl} />
                             ) : (
                                 <p className="text-gray-500 flex items-center justify-center h-full">
                                     {viewerMessage}
