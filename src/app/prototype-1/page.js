@@ -13,11 +13,11 @@ export default function Prototype1() {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
     const [viewerMessage, setViewerMessage] = useState(
-        'Generate an asset to view it here'
+        'Generate An Asset To View It Here'
     );
     const viewerRef = useRef(null);
 
-    const handleGenerate = async () => {
+    const generateFromObjectName = async (objectName) => {
         setIsLoading(true);
         setError('');
         setAiSummary('');
@@ -27,7 +27,7 @@ export default function Prototype1() {
             const response = await fetch('/api/ai-summary', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ objectName: textInput }),
+                body: JSON.stringify({ objectName }),
             });
 
             const data = await response.json();
@@ -38,7 +38,6 @@ export default function Prototype1() {
                 setModelUrl(ASSET_MAP[data.assetKey].url);
                 setViewerMessage('');
             } else {
-                setModelUrl(null);
                 setViewerMessage(
                     'This object is not supported yet. Try a fire extinguisher or wet floor sign.'
                 );
@@ -51,6 +50,56 @@ export default function Prototype1() {
     };
 
 
+    const handleGenerate = async () => {
+        if (!textInput.trim()) {
+            setError('Please describe an object or upload an image.');
+            return;
+        }
+
+        generateFromObjectName(textInput);
+    };
+
+    const handleImageUpload = async (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setIsLoading(true);
+        setError('');
+
+        const reader = new FileReader();
+
+        reader.onload = async () => {
+            try {
+                const response = await fetch('/api/image-classify', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ imageBase64: reader.result }),
+                });
+
+                const data = await response.json();
+
+                if (!data.label) {
+                    setViewerMessage('Could not identify the object in the image.');
+                    setIsLoading(false);
+                    return;
+                }
+
+                setTextInput(data.label);
+
+                await generateFromObjectName(data.label);
+
+            } catch {
+                setError('Failed to analyze the image.');
+                setIsLoading(false);
+            }
+        };
+
+        reader.readAsDataURL(file);
+    };
+
+
+
+
     return (
         <div className="min-h-screen bg-gray-50">
             <div className="max-w-7xl mx-auto px-6 py-8">
@@ -61,14 +110,14 @@ export default function Prototype1() {
                                 Generate 3D Training Asset
                             </h1>
                             <p className="text-gray-600">
-                                Create interactive 3D models for your training modules
+                                Create Interactive 3D Models For Your Training Modules
                             </p>
                         </div>
 
                         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 space-y-4">
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Describe an object
+                                    Describe An Object
                                 </label>
                                 <input
                                     type="text"
@@ -81,11 +130,18 @@ export default function Prototype1() {
 
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Or upload an image (optional)
+                                    Or Upload An Image (Optional)
                                 </label>
                                 <button className="w-full px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-400 transition-colors flex items-center justify-center gap-2 text-gray-600 hover:text-blue-600">
-                                    <Upload className="w-5 h-5" />
-                                    <span>Upload Image</span>
+                                    {/* <Upload className="w-5 h-5" /> */}
+                                    {/* <span>Upload Image</span> */}
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={handleImageUpload}
+                                        disabled={isLoading}
+                                    />
+
                                 </button>
                             </div>
 
@@ -111,7 +167,7 @@ export default function Prototype1() {
 
                                 {isLoading && (
                                     <p className="text-gray-600 animate-pulse">
-                                        Generating educational summary…
+                                        Generating Educational Summary…
                                     </p>
                                 )}
 
@@ -180,7 +236,7 @@ export default function Prototype1() {
                         </div>
 
                         <p className="text-sm text-gray-600 text-center">
-                            Interactive 3D model prepared for training modules
+                            Interactive 3D Model Prepared for Training Modules
                         </p>
                     </div>
                 </div>
