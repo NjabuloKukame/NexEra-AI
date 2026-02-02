@@ -1,12 +1,15 @@
 "use client"
 
-import { useState } from 'react';
-import { RotateCw, ZoomIn, RefreshCw } from 'lucide-react';
+import { useState, useRef } from 'react';
+import { RotateCw, ZoomIn, RefreshCw, ZoomOut } from 'lucide-react';
+import AvatarViewer from '../components/AvatarViewer/AvatarViewer';
 
 export default function Prototype2() {
   const [command, setCommand] = useState('');
   const [executedCommand, setExecutedCommand] = useState('');
   const [aiExplanation, setAiExplanation] = useState('');
+
+  const viewerRef = useRef(null);
 
   const handleExecute = () => {
     setExecutedCommand(command);
@@ -66,17 +69,17 @@ export default function Prototype2() {
               </h3>
               <ul className="space-y-2">
                 {[
-                  'Wave hello',
-                  'Point at the extinguisher',
-                  'Nod in agreement',
-                  'Show thumbs up',
-                  'Cross arms',
+                  'Wave Hello',
+                  'Jump Up And Down',
+                  'Dance',
+                  'Walk Forward',
+                  'Walk Backwards',
                   'Gesture to the exit',
                 ].map((example) => (
                   <li key={example}>
                     <button
                       onClick={() => setCommand(example)}
-                      className="text-sm text-blue-600 hover:text-blue-700 hover:underline"
+                      className="text-sm text-blue-600 hover:text-blue-700 hover:underline cursor-pointer"
                     >
                       {example}
                     </button>
@@ -92,42 +95,42 @@ export default function Prototype2() {
                 Avatar Scene
               </h2>
               <div className="flex gap-2">
-                <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors" title="Rotate">
+                <button
+                  onClick={() => viewerRef.current?.rotate()}
+                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                  title="Rotate"
+                >
                   <RotateCw className="w-5 h-5 text-gray-600" />
                 </button>
-                <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors" title="Zoom">
+
+                <button
+                  onClick={() => viewerRef.current?.zoomOut()}
+                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                  title="Zoom Out"
+                >
+                  <ZoomOut className="w-5 h-5 text-gray-600" />
+                </button>
+
+                <button
+                  onClick={() => viewerRef.current?.zoomIn()}
+                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                  title="Zoom In"
+                >
                   <ZoomIn className="w-5 h-5 text-gray-600" />
                 </button>
-                <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors" title="Reset">
+
+                <button
+                  onClick={() => viewerRef.current?.reset()}
+                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                  title="Reset"
+                >
                   <RefreshCw className="w-5 h-5 text-gray-600" />
                 </button>
               </div>
             </div>
 
-            <div className="aspect-square bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg flex items-center justify-center mb-4 relative">
-              <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-400 opacity-30"></div>
-
-              <div className="text-center">
-                <div className="relative">
-                  <div className="w-20 h-20 bg-gray-400 rounded-full mb-2 mx-auto"></div>
-                  <div className="w-16 h-24 bg-gray-500 rounded-lg mb-2 mx-auto"></div>
-                  <div className="flex gap-2 justify-center mb-2">
-                    <div className="w-6 h-20 bg-gray-500 rounded-lg"></div>
-                    <div className="w-6 h-20 bg-gray-500 rounded-lg"></div>
-                  </div>
-                  <div className="flex gap-2 justify-center">
-                    <div className="w-5 h-16 bg-gray-400 rounded-lg"></div>
-                    <div className="w-5 h-16 bg-gray-400 rounded-lg"></div>
-                  </div>
-                </div>
-                {executedCommand && (
-                  <div className="mt-4">
-                    <p className="text-sm text-gray-600 font-medium">
-                      Executing: {executedCommand}
-                    </p>
-                  </div>
-                )}
-              </div>
+            <div className="aspect-square rounded-lg overflow-hidden bg-gray-100">
+              <AvatarViewer ref={viewerRef} />
             </div>
 
             <p className="text-sm text-gray-600 text-center">
