@@ -36,6 +36,10 @@ export async function POST(req) {
                     - wave
                     - point
                     - dance
+                    -salute
+                    -dropKick
+                    -climb
+                    -jog
                     - jump
                     - walkForward
                     - walkBackward
@@ -94,6 +98,10 @@ export async function POST(req) {
             'jump',
             'walkForward',
             'walkBackward',
+            'salute',
+            'dropKick',
+            'climb',
+            'jog',
             'idle',
         ];
 

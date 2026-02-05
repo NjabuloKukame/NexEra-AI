@@ -8,48 +8,45 @@ import {
   useState,
   Suspense,
 } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Canvas } from "@react-three/fiber";
 import { OrbitControls, useGLTF, useAnimations } from "@react-three/drei";
 import * as THREE from "three";
-
-/* -------------------- AVATAR MODEL -------------------- */
-
-function AvatarModel({ currentAction }) {
+function AvatarModel({ currentAction, onAnimationFinished }) {
   const modelRef = useRef();
   const previousAction = useRef(null);
 
   const { scene, animations } = useGLTF("/animation-models/base-avatar.glb");
-
   const { actions } = useAnimations(animations, modelRef);
 
+  // Aggressive Root Motion Fix: Removes drifting from all animations
   useEffect(() => {
     if (!animations) return;
-
     animations.forEach((clip) => {
-      clip.tracks = clip.tracks.filter((track) => {
-        const isPositionTrack = track.name.endsWith(".position");
-
-        return !isPositionTrack;
-      });
+      clip.tracks = clip.tracks.filter((track) => !track.name.endsWith(".position"));
     });
   }, [animations]);
 
+  // Animation Logic
   useEffect(() => {
-    if (!actions || !currentAction) return;
+    
+    if (!actions || !currentAction) {
+      if (previousAction.current && actions[previousAction.current]) {
+        actions[previousAction.current].fadeOut(0.5);
+      }
+      return;
+    }
 
     if (previousAction.current && actions[previousAction.current]) {
       actions[previousAction.current].fadeOut(0.2);
     }
 
     const action = actions[currentAction];
-
     if (!action) {
-      console.warn("Missing animation:", currentAction);
+      console.warn("Missing Animation:", currentAction);
       return;
     }
 
-    action.reset();
-    action.fadeIn(0.2);
+    action.reset().fadeIn(0.2);
 
     const oneShotActions = ["Jumping", "Salute", "DropKick"];
 
@@ -60,10 +57,10 @@ function AvatarModel({ currentAction }) {
 
       const mixer = action.getMixer();
       const onFinished = () => {
-        action.fadeOut(0.2);
+        action.fadeOut(0.5);
+        if (onAnimationFinished) onAnimationFinished(); 
         mixer.removeEventListener("finished", onFinished);
       };
-
       mixer.addEventListener("finished", onFinished);
     } else {
       action.setLoop(THREE.LoopRepeat);
@@ -71,8 +68,9 @@ function AvatarModel({ currentAction }) {
     }
 
     previousAction.current = currentAction;
-  }, [actions, currentAction]);
+  }, [actions, currentAction, onAnimationFinished]);
 
+  // Shadow and Frustum Fix
   useEffect(() => {
     scene.traverse((obj) => {
       if (obj.isMesh) {
@@ -95,8 +93,9 @@ function AvatarModel({ currentAction }) {
 
 const AvatarViewer = forwardRef(function AvatarViewer(_, ref) {
   const controlsRef = useRef();
-  const [currentAction, setCurrentAction] = useState("Waving");
-  const [isRotating, setIsRotating] = useState(false);
+  
+  const [currentAction, setCurrentAction] = useState(null); 
+  const [statusText, setStatusText] = useState("Waiting For Command...");
 
   const actionMap = {
     walkForward: "Walking",
@@ -110,17 +109,22 @@ const AvatarViewer = forwardRef(function AvatarViewer(_, ref) {
     climb: "Climbing",
     jog: "Jogging",
   };
+
   useImperativeHandle(ref, () => ({
     playAnimation(action) {
-      setCurrentAction(actionMap[action] || "Waving");
+      const target = actionMap[action];
+      if (target) {
+        setCurrentAction(target);
+        setStatusText(`Performing: ${target}`);
+      } else {
+        setStatusText(`Unknown Command: "${action}". Animation complete.`);
+        setCurrentAction(null);
+      }
     },
 
     toggleRotate() {
       if (!controlsRef.current) return;
-      const next = !isRotating;
-      controlsRef.current.autoRotate = next;
-      controlsRef.current.autoRotateSpeed = 2;
-      setIsRotating(next);
+      controlsRef.current.autoRotate = !controlsRef.current.autoRotate;
     },
 
     zoomIn() {
@@ -135,33 +139,71 @@ const AvatarViewer = forwardRef(function AvatarViewer(_, ref) {
 
     reset() {
       controlsRef.current?.reset();
-      setCurrentAction("Waving");
-      setIsRotating(false);
-      if (controlsRef.current) {
-        controlsRef.current.autoRotate = false;
-      }
+      setCurrentAction(null);
+      setStatusText("Waiting For Command...");
     },
   }));
 
   return (
-    <Canvas camera={{ position: [0, 1.6, 4], fov: 45 }} dpr={[1, 1.5]} shadows>
-      <ambientLight intensity={0.7} />
-      <pointLight position={[10, 10, 10]} intensity={1.5} castShadow />
-      <directionalLight position={[-5, 5, 5]} intensity={0.8} />
+    <div style={{ width: '100%', height: '100%', position: 'relative' }}>
+      
+      {/* UI Overlay for feedback */}
+      <div style={{
+        position: 'absolute',
+        top: '20px',
+        left: '20px',
+        zIndex: 10,
+        color: 'white',
+        background: 'rgba(16, 185, 129)',
+        border: '1px solid rgba(52, 211, 153, 0.4)',
+        backdropFilter: 'blur(12px)',
+        padding: '12px 20px',
+        borderRadius: '12px',
+        fontFamily: 'system-ui, -apple-system, sans-serif',
+        pointerEvents: 'none',
+        fontSize: '14px',
+        fontWeight: '500',
+        letterSpacing: '0.5px',
+        maxWidth: '300px',
+        animation: 'fadeIn 0.3s ease-out'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div style={{ 
+            width: '8px', 
+            height: '8px', 
+            borderRadius: '50%', 
+            backgroundColor: '#000',
+            animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+          }}></div>
+          {statusText}
+        </div>
+      </div>
 
-      <Suspense fallback={null}>
-        <AvatarModel currentAction={currentAction} />
-      </Suspense>
+      <Canvas camera={{ position: [0, 1.6, 4], fov: 45 }} dpr={[1, 1.5]} shadows>
+        <ambientLight intensity={0.7} />
+        <pointLight position={[10, 10, 10]} intensity={1.5} castShadow />
+        <directionalLight position={[-5, 5, 5]} intensity={0.8} />
 
-      <OrbitControls
-        ref={controlsRef}
-        enablePan={false}
-        enableDamping
-        dampingFactor={0.08}
-        minDistance={2}
-        maxDistance={10}
-      />
-    </Canvas>
+        <Suspense fallback={null}>
+          <AvatarModel 
+            currentAction={currentAction} 
+            onAnimationFinished={() => {
+              setCurrentAction(null); // Stop animating
+              setStatusText("Animation Complete. Type Another Command.");
+            }}
+          />
+        </Suspense>
+
+        <OrbitControls
+          ref={controlsRef}
+          enablePan={false}
+          enableDamping
+          dampingFactor={0.08}
+          minDistance={2}
+          maxDistance={10}
+        />
+      </Canvas>
+    </div>
   );
 });
 

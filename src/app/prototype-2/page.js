@@ -55,7 +55,7 @@ export default function Prototype2() {
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Enter a command
+                  Enter A Command
                 </label>
                 <input
                   type="text"
@@ -87,14 +87,18 @@ export default function Prototype2() {
               <h3 className="text-lg font-semibold text-gray-900 mb-3">
                 Example Commands
               </h3>
-              <ul className="space-y-2">
+              <ul className="grid grid-cols-2 gap-3">
                 {[
-                  'Wave Hello',
+                  'Wave',
                   'Jump',
                   'Dance',
-                  'Walk Forward',
+                  'Walk ',
                   'Walk Backwards',
                   'Point',
+                  'Salute',
+                  'Drop Kick',
+                  'Climb',
+                  'Jog',
                 ].map((example) => (
                   <li key={example}>
                     <button
@@ -153,8 +157,8 @@ export default function Prototype2() {
               <AvatarViewer ref={viewerRef} />
             </div>
 
-            <p className="text-sm text-gray-600 text-center">
-              AI-driven avatar responding to natural language commands
+            <p className="text-sm text-gray-600 text-center mt-6">
+              AI-driven Avatar Responding To Natural Language Commands
             </p>
           </div>
         </div>
