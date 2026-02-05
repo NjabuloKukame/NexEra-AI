@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useRef } from 'react';
-import { RotateCw, ZoomIn, RefreshCw, ZoomOut } from 'lucide-react';
+import { RotateCw, ZoomIn, RefreshCw, ZoomOut, Sparkles, Send } from 'lucide-react';
 import AvatarViewer from '../components/AvatarViewer/AvatarViewer';
 
 export default function Prototype2() {
@@ -39,60 +39,71 @@ export default function Prototype2() {
 
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-6 py-8">
+    <div className="min-h-screen bg-white">
+      <div className="max-w-7xl mx-auto px-6 py-12">
+        <div className="mb-12 text-center">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-black/5 border border-black/10 mb-2">
+            <Sparkles className="w-4 h-4 text-black" />
+            <span className="text-sm text-black/80 font-medium">AI-Powered Avatar Control</span>
+          </div>
+          <h1 className="text-3xl font-bold text-black mb-2 tracking-tight">
+            Command the Training Avatar
+          </h1>
+          <p className="text-black/60 text-lg max-w-2xl mx-auto">
+            Use natural language to control avatar actions in real-time
+          </p>
+        </div>
+
         <div className="grid lg:grid-cols-2 gap-8">
           <div className="space-y-6">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                Command the Training Avatar
-              </h1>
-              <p className="text-gray-600">
-                Use natural language to control avatar actions
-              </p>
-            </div>
-
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Enter A Command
-                </label>
+            <div className="bg-black/5 backdrop-blur-xl rounded-2xl border border-black/10 p-8 space-y-6">
+              <div className="relative">
                 <input
                   type="text"
                   value={command}
                   onChange={(e) => setCommand(e.target.value)}
-                  placeholder="e.g. Wave hello, Point at the extinguisher"
-                  className="w-full px-4 py-3 border text-black border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none"
+                  onKeyDown={(e) => e.key === 'Enter' && handleExecute()}
+                  placeholder="Describe what the avatar should do..."
+                  className="w-full px-6 py-4 bg-white/40 border border-black/20 rounded-xl text-black placeholder:text-black/40 focus:outline-none focus:border-black/40 transition-all"
                 />
               </div>
 
               <button
                 onClick={handleExecute}
-                className="w-full bg-green-600 text-white font-medium py-3 px-6 rounded-lg hover:bg-green-700 transition-colors"
+                className="w-full bg-black text-white font-semibold py-4 px-6 rounded-xl hover:bg-black/90 transition-all flex items-center justify-center gap-2 group"
               >
-                Execute Command
+                <span>Execute Command</span>
+                <Send className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
               </button>
             </div>
 
             {executedCommand && (
-              <div className="bg-green-50 rounded-lg border border-green-200 p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                  AI Explanation
-                </h3>
-                <p className="text-gray-700 leading-relaxed">{aiExplanation}</p>
+              <div className="bg-black/5 backdrop-blur-xl rounded-2xl border border-black/10 p-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <div className="flex items-start gap-3 mb-4">
+                  <div className="p-2 bg-black/10 rounded-lg">
+                    <Sparkles className="w-5 h-5 text-black" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-black mb-1">
+                      AI Response
+                    </h3>
+                    <p className="text-sm text-black/50">Interpreted: "{executedCommand}"</p>
+                  </div>
+                </div>
+                <p className="text-black/80 leading-relaxed">{aiExplanation}</p>
               </div>
             )}
 
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                Example Commands
+            <div className="bg-black/5 backdrop-blur-xl rounded-2xl border border-black/10 p-8">
+              <h3 className="text-lg font-semibold text-black mb-6">
+                Quick Commands
               </h3>
-              <ul className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-3">
                 {[
                   'Wave',
                   'Jump',
                   'Dance',
-                  'Walk ',
+                  'Walk',
                   'Walk Backwards',
                   'Point',
                   'Salute',
@@ -100,69 +111,72 @@ export default function Prototype2() {
                   'Climb',
                   'Jog',
                 ].map((example) => (
-                  <li key={example}>
-                    <button
-                      onClick={() => setCommand(example)}
-                      className="text-sm text-blue-600 hover:text-blue-700 hover:underline cursor-pointer"
-                    >
-                      {example}
-                    </button>
-                  </li>
+                  <button
+                    key={example}
+                    onClick={() => setCommand(example)}
+                    className="px-4 py-2.5 bg-black/5 hover:bg-black/10 border border-black/10 hover:border-black/20 rounded-lg text-sm text-black/80 hover:text-black transition-all text-left"
+                  >
+                    {example}
+                  </button>
                 ))}
-              </ul>
+              </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-xl font-semibold text-gray-900">
-                Avatar Scene
+          <div className="bg-black/5 backdrop-blur-xl rounded-2xl border border-black/10 p-8">
+            <div className="mb-6 flex items-center justify-between">
+              <h2 className="text-xl font-semibold text-black">
+                Live Preview
               </h2>
               <div className="flex gap-2">
                 <button
                   onClick={() => viewerRef.current?.toggleRotate()}
-                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                  className="p-2.5 hover:bg-black/10 bg-black/5 border border-black/10 rounded-lg transition-all"
                   title="Rotate"
                 >
-                  <RotateCw className="w-5 h-5 text-gray-600" />
+                  <RotateCw className="w-5 h-5 text-black/80" />
                 </button>
 
                 <button
                   onClick={() => viewerRef.current?.zoomOut()}
-                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                  className="p-2.5 hover:bg-black/10 bg-black/5 border border-black/10 rounded-lg transition-all"
                   title="Zoom Out"
                 >
-                  <ZoomOut className="w-5 h-5 text-gray-600" />
+                  <ZoomOut className="w-5 h-5 text-black/80" />
                 </button>
 
                 <button
                   onClick={() => viewerRef.current?.zoomIn()}
-                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                  className="p-2.5 hover:bg-black/10 bg-black/5 border border-black/10 rounded-lg transition-all"
                   title="Zoom In"
                 >
-                  <ZoomIn className="w-5 h-5 text-gray-600" />
+                  <ZoomIn className="w-5 h-5 text-black/80" />
                 </button>
 
                 <button
                   onClick={() => viewerRef.current?.reset()}
-                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                  className="p-2.5 hover:bg-black/10 bg-black/5 border border-black/10 rounded-lg transition-all"
                   title="Reset"
                 >
-                  <RefreshCw className="w-5 h-5 text-gray-600" />
+                  <RefreshCw className="w-5 h-5 text-black/80" />
                 </button>
               </div>
             </div>
 
-            <div className="aspect-square rounded-lg overflow-hidden bg-gray-100">
+            <div className="aspect-square rounded-xl overflow-hidden bg-white/40 border border-black/10">
               <AvatarViewer ref={viewerRef} />
             </div>
 
-            <p className="text-sm text-gray-600 text-center mt-6">
-              AI-driven Avatar Responding To Natural Language Commands
-            </p>
+            <div className="mt-6 flex items-center justify-center gap-2">
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+              <p className="text-sm text-black/60">
+                Real-time AI interpretation active
+              </p>
+            </div>
           </div>
         </div>
       </div>
     </div>
   );
 }
+

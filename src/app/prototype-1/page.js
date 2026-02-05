@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useRef } from 'react';
-import { Upload, RotateCw, ZoomIn, RefreshCw, ZoomOut } from 'lucide-react';
+import { Sparkles, RotateCw, ZoomIn, RefreshCw, ZoomOut, Upload } from 'lucide-react';
 import ModelViewer from '../components/ModelViewer/ModelViewer';
 import { ASSET_MAP } from '../lib/assets';
 
@@ -101,72 +101,69 @@ export default function Prototype1() {
 
 
     return (
-        <div className="min-h-screen bg-gray-50">
-            <div className="max-w-7xl mx-auto px-6 py-8">
+        <div className="min-h-screen bg-white">
+            <div className="max-w-7xl mx-auto px-6 py-12">
+                <div className="mb-12 text-center">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-black/5 border border-black/10 mb-2">
+                        <Sparkles className="w-4 h-4 text-black" />
+                        <span className="text-sm text-black/80 font-medium">AI-Powered 3D Generation</span>
+                    </div>
+                    <h1 className="text-3xl font-bold text-black mb-2 tracking-tight">
+                        Generate 3D Training Asset
+                    </h1>
+                    <p className="text-black/60 text-lg max-w-2xl mx-auto">
+                        Create interactive 3D models for your training modules
+                    </p>
+                </div>
+
                 <div className="grid lg:grid-cols-2 gap-8">
                     <div className="space-y-6">
-                        <div>
-                            <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                                Generate 3D Training Asset
-                            </h1>
-                            <p className="text-gray-600">
-                                Create Interactive 3D Models For Your Training Modules
-                            </p>
-                        </div>
+                        <div className="bg-black/5 backdrop-blur-xl rounded-2xl border border-black/10 p-8 space-y-6">
+                            <input
+                                type="text"
+                                value={textInput}
+                                onChange={(e) => setTextInput(e.target.value)}
+                                onKeyDown={(e) => e.key === 'Enter' && handleGenerate()}
+                                placeholder="Describe an object to generate..."
+                                className="w-full px-6 py-4 bg-white/40 border border-black/20 rounded-xl text-black placeholder:text-black/40 focus:outline-none focus:border-black/40 transition-all"
+                            />
 
-                        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Describe An Object
-                                </label>
-                                <input
-                                    type="text"
-                                    value={textInput}
-                                    onChange={(e) => setTextInput(e.target.value)}
-                                    placeholder="e.g. Drill, Fire Extinguisher, Wet Floor Sign, Measuring Tape"
-                                    className="w-full px-4 py-3 text-black border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Or Upload An Image (Optional)
-                                </label>
-                                <button className="w-full px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-400 transition-colors flex items-center justify-center gap-2 text-gray-600 hover:text-blue-600">
-                                    {/* <Upload className="w-5 h-5" /> */}
-                                    {/* <span>Upload Image</span> */}
+                            <div className="relative">
+                                <label className="w-full px-6 py-4 border-2 border-dashed border-black/20 rounded-xl hover:border-black/40 transition-all flex items-center justify-center gap-2 text-black/60 hover:text-black cursor-pointer">
+                                    <Upload className="w-5 h-5" />
+                                    <span>Upload Image (Optional)</span>
                                     <input
                                         type="file"
                                         accept="image/*"
                                         onChange={handleImageUpload}
                                         disabled={isLoading}
+                                        className="hidden"
                                     />
-
-                                </button>
+                                </label>
                             </div>
 
                             <button
                                 onClick={handleGenerate}
                                 disabled={isLoading}
-                                className={`w-full font-medium py-3 px-6 rounded-lg transition-colors
-                                    ${isLoading
-                                        ? 'bg-blue-400 cursor-not-allowed'
-                                        : 'bg-blue-600 hover:bg-blue-700 text-white'
-                                    }`}
+                                className="w-full bg-black text-white font-semibold py-4 px-6 rounded-xl hover:bg-black/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 {isLoading ? 'Generating…' : 'Generate Asset'}
                             </button>
                         </div>
 
                         {(isLoading || aiSummary || error) && (
-                            <div className="rounded-lg border p-6 bg-blue-50 border-blue-200">
-
-                                <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                                    AI Educational Summary
-                                </h3>
+                            <div className="bg-black/5 backdrop-blur-xl rounded-2xl border border-black/10 p-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                                <div className="flex items-start gap-3 mb-4">
+                                    <div className="p-2 bg-black/10 rounded-lg">
+                                        <Sparkles className="w-5 h-5 text-black" />
+                                    </div>
+                                    <h3 className="text-lg font-semibold text-black">
+                                        AI Educational Summary
+                                    </h3>
+                                </div>
 
                                 {isLoading && (
-                                    <p className="text-gray-600 animate-pulse">
+                                    <p className="text-black/60 animate-pulse">
                                         Generating Educational Summary…
                                     </p>
                                 )}
@@ -176,68 +173,70 @@ export default function Prototype1() {
                                 )}
 
                                 {aiSummary && !isLoading && (
-                                    <p className="text-gray-700 leading-relaxed">
+                                    <p className="text-black/80 leading-relaxed">
                                         {aiSummary}
                                     </p>
                                 )}
                             </div>
                         )}
-
                     </div>
 
-                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                        <div className="mb-4 flex items-center justify-between">
-                            <h2 className="text-xl font-semibold text-gray-900">
-                                3D Viewer
+                    <div className="bg-black/5 backdrop-blur-xl rounded-2xl border border-black/10 p-8">
+                        <div className="mb-6 flex items-center justify-between">
+                            <h2 className="text-xl font-semibold text-black">
+                                3D Preview
                             </h2>
                             <div className="flex gap-2">
                                 <button
                                     onClick={() => viewerRef.current?.rotate()}
-                                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                                    className="p-2.5 hover:bg-black/10 bg-black/5 border border-black/10 rounded-lg transition-all"
                                     title="Rotate"
                                 >
-                                    <RotateCw className="w-5 h-5 text-gray-600" />
+                                    <RotateCw className="w-5 h-5 text-black/80" />
                                 </button>
 
                                 <button
                                     onClick={() => viewerRef.current?.zoomOut()}
-                                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                                    className="p-2.5 hover:bg-black/10 bg-black/5 border border-black/10 rounded-lg transition-all"
                                     title="Zoom Out"
                                 >
-                                    <ZoomOut className="w-5 h-5 text-gray-600" />
+                                    <ZoomOut className="w-5 h-5 text-black/80" />
                                 </button>
 
                                 <button
                                     onClick={() => viewerRef.current?.zoomIn()}
-                                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                                    className="p-2.5 hover:bg-black/10 bg-black/5 border border-black/10 rounded-lg transition-all"
                                     title="Zoom In"
                                 >
-                                    <ZoomIn className="w-5 h-5 text-gray-600" />
+                                    <ZoomIn className="w-5 h-5 text-black/80" />
                                 </button>
 
                                 <button
                                     onClick={() => viewerRef.current?.reset()}
-                                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                                    className="p-2.5 hover:bg-black/10 bg-black/5 border border-black/10 rounded-lg transition-all"
                                     title="Reset"
                                 >
-                                    <RefreshCw className="w-5 h-5 text-gray-600" />
+                                    <RefreshCw className="w-5 h-5 text-black/80" />
                                 </button>
                             </div>
                         </div>
 
-                        <div className="aspect-square rounded-lg overflow-hidden bg-gray-100">
+                        <div className="aspect-square rounded-xl overflow-hidden bg-white/40 border border-black/10">
                             {modelUrl ? (
                                 <ModelViewer ref={viewerRef} modelUrl={modelUrl} />
                             ) : (
-                                <p className="text-gray-500 flex items-center justify-center h-full">
+                                <p className="text-black/50 flex items-center justify-center h-full text-center px-4">
                                     {viewerMessage}
                                 </p>
                             )}
                         </div>
 
-                        <p className="text-sm text-gray-600 text-center">
-                            Interactive 3D Model Prepared for Training Modules
-                        </p>
+                        <div className="mt-6 flex items-center justify-center gap-2">
+                            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                            <p className="text-sm text-black/60">
+                                Real-time 3D generation active
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
