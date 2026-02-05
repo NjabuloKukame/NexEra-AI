@@ -14,7 +14,7 @@ export default function Home() {
             NexEra AI Training
           </h1>
           <p className="text-xl text-black/60 max-w-2xl mx-auto">
-            Experimental AI-driven tools for human learning and training
+            Experimental AI-Driven Tools For Human Learning and Training
           </p>
         </div>
 
@@ -31,7 +31,7 @@ export default function Home() {
                 AI-Generated 3D Learning Content
               </h2>
               <p className="text-black/60 leading-relaxed">
-                Generate interactive 3D training assets from text or images using AI
+                Generate Interactive 3D Training Assets From Text or Images Using AI
               </p>
             </div>
             <div className="mt-auto flex items-center gap-2 text-black font-medium group-hover:gap-3 transition-all">
@@ -52,7 +52,7 @@ export default function Home() {
                 AI Avatar Command & Animation
               </h2>
               <p className="text-black/60 leading-relaxed">
-                Control a learning avatar using natural language commands
+                Control A Learning Avatar Using Natural Language Commands
               </p>
             </div>
             <div className="mt-auto flex items-center gap-2 text-black font-medium group-hover:gap-3 transition-all">
