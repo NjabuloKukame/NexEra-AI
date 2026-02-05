@@ -11,12 +11,32 @@ export default function Prototype2() {
 
   const viewerRef = useRef(null);
 
-  const handleExecute = () => {
-    setExecutedCommand(command);
-    setAiExplanation(
-      `The "${command}" action is valuable in training contexts for demonstrating clear communication and engagement with learners. Such gestures help establish rapport, direct attention to important safety equipment or hazards, and reinforce key learning objectives through physical demonstration. This type of interactive avatar behavior enhances learner engagement and retention in virtual training environments.`
-    );
+  const handleExecute = async () => {
+    if (!command.trim()) return;
+
+    try {
+      const res = await fetch('/api/interpret-command', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ command }),
+      });
+
+      const data = await res.json();
+
+      setExecutedCommand(command);
+      setAiExplanation(data.summary);
+
+
+      viewerRef.current?.playAnimation(data.action);
+
+    } catch (err) {
+      console.error(err);
+      setAiExplanation(
+        'The avatar remains idle as the command could not be interpreted.'
+      );
+    }
   };
+
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -70,11 +90,11 @@ export default function Prototype2() {
               <ul className="space-y-2">
                 {[
                   'Wave Hello',
-                  'Jump Up And Down',
+                  'Jump',
                   'Dance',
                   'Walk Forward',
                   'Walk Backwards',
-                  'Gesture to the exit',
+                  'Point',
                 ].map((example) => (
                   <li key={example}>
                     <button
@@ -96,7 +116,7 @@ export default function Prototype2() {
               </h2>
               <div className="flex gap-2">
                 <button
-                  onClick={() => viewerRef.current?.rotate()}
+                  onClick={() => viewerRef.current?.toggleRotate()}
                   className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
                   title="Rotate"
                 >
