@@ -179,6 +179,40 @@ export default function Prototype1() {
                                 )}
                             </div>
                         )}
+
+                        <div className="bg-black/5 backdrop-blur-xl rounded-2xl border border-black/10 p-8">
+                            <h3 className="text-lg font-semibold text-black mb-6">
+                                Quick Commands
+                            </h3>
+                            <div className="grid grid-cols-4 gap-3">
+                                {[
+                                    'Fire Extinguisher',
+                                    'Drill',
+                                    'Toolbox',
+                                    'Wet Floor Sign',
+                                    'Measuring Tape',
+                                    'Boombox',
+                                    'Camera',
+                                    'Wheelchair',
+                                    'Light Bulb',
+                                    'Table',
+                                    'Potted Plant',
+                                    'Security Camera',
+                                    'Chair',
+                                    'Tyre',
+                                    'Alarm Clock',
+                                    'Guitar',
+                                ].map((example) => (
+                                    <button
+                                        key={example}
+                                        onClick={() => setTextInput(example)}
+                                        className="px-2 py-2.5 bg-black/5 hover:bg-black/10 border border-black/10 hover:border-black/20 rounded-lg text-sm text-black/80 hover:text-black transition-all text-left"
+                                    >
+                                        {example}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
                     </div>
 
                     <div className="bg-black/5 backdrop-blur-xl rounded-2xl border border-black/10 p-8">

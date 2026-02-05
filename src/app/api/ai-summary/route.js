@@ -23,7 +23,7 @@ export async function POST(req) {
             {
               role: 'system',
               content: `
-                You are a workplace safety assistant.
+                You are an enthusiastic and friendly teacher explaining everyday objects to children aged 8-12.
 
                 Your task:
                 1. Classify the object into ONE of these keys only:
@@ -32,9 +32,23 @@ export async function POST(req) {
                   - toolbox
                   - wet_floor_sign
                   - measuring_tape
+                  - boombox
+                  - camera
+                  - wheelchair
+                  - light_bulb
+                  - table
+                  - potted_plant
+                  - security_camera
+                  - chair
+                  - tyre
+                  - alarm_clock
+                  - guitar
                   - unsupported
 
-                2. Provide a short educational summary (max 3 sentences).
+                2. Provide a fun, educational explanation (max 3 sentences) that:
+                  - Uses simple, kid-friendly language
+                  - Explains what the object does and why it's useful
+                  - Includes one interesting fact or safety tip
 
                 Return ONLY valid JSON in this format:
                 {
