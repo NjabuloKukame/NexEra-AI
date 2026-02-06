@@ -117,7 +117,7 @@ const AvatarViewer = forwardRef(function AvatarViewer(_, ref) {
         setCurrentAction(target);
         setStatusText(`Performing: ${target}`);
       } else {
-        setStatusText(`Unknown Command: "${action}". Animation complete.`);
+        setStatusText(`Unsupported Command. Try: Walk, Wave ...`);
         setCurrentAction(null);
       }
     },
@@ -154,7 +154,7 @@ const AvatarViewer = forwardRef(function AvatarViewer(_, ref) {
         left: '20px',
         zIndex: 10,
         color: 'white',
-        background: 'rgba(16, 185, 129)',
+        background: '#000',
         border: '1px solid rgba(52, 211, 153, 0.4)',
         backdropFilter: 'blur(12px)',
         padding: '12px 20px',
@@ -172,7 +172,7 @@ const AvatarViewer = forwardRef(function AvatarViewer(_, ref) {
             width: '8px', 
             height: '8px', 
             borderRadius: '50%', 
-            backgroundColor: '#000',
+            backgroundColor: '#fff',
             animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
           }}></div>
           {statusText}
