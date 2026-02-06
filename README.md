@@ -92,7 +92,7 @@ The system interprets these commands and plays the corresponding skeletal animat
 
 ---
 
-##🔮 Next Steps & Improvements
+## 🔮 Next Steps & Improvements
 * Add a true idle animation state.
 * Introduce object-aware interactions.
 * Support chained commands (“Walk forward and wave”).
