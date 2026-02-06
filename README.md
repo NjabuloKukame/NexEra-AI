@@ -83,6 +83,32 @@ The system interprets these commands and plays the corresponding skeletal animat
 
 ---
 
+## 🤖 AI Systems Used
+
+### Groq (LLM Inference)
+Groq is used to interpret natural language commands and map them to structured avatar actions.
+
+* **Model:** `llama-3.1-8b-instant`
+* **Purpose:**
+    * Convert free-form user input into predefined action labels.
+    * Return a short natural-language explanation of the action.
+* **Why Groq:**
+    * Extremely fast inference.
+    * Low latency, ideal for interactive UIs.
+    * Accessed via its OpenAI-compatible API endpoint.
+
+### Hugging Face (Model Access & Experimentation)
+Hugging Face is used for:
+* **Experimenting** with NLP models.
+* **Rapid prototyping** of language understanding logic.
+* **Model testing** and comparison during development.
+
+**Hugging Face complements Groq by providing:**
+* Easy access to open-source models.
+* A flexible experimentation environment.
+
+---
+
 ## ⚠️ Known Limitations
 * Animations are predefined: No procedural motion (physics-based).
 * No physics-based interaction: Limited interaction with objects.
