@@ -12,6 +12,11 @@ import { Canvas } from "@react-three/fiber";
 import { OrbitControls, useGLTF, useAnimations, Html } from "@react-three/drei";
 import * as THREE from "three";
 
+/**
+ * A simple loading scene that displays a spinning circle and the text "Loading Avatar...".
+ * It is used as a placeholder while the avatar is being loaded.
+ * @returns {JSX.Element} A JSX element representing the loading scene.
+ */
 function LoadingScene() {
   return (
     <Html center>
@@ -44,13 +49,22 @@ function LoadingScene() {
 }
 
 // Preload avatar model for faster initial load
-useGLTF.preload("/animation-models/base-avatar.glb");
+useGLTF.preload("/animation-models/base-avatar-compressed.glb");
 
+/**
+ * A React component that renders an avatar model and plays animations based on the
+ * currentAction prop. It also provides a onAnimationFinished callback to notify the
+ * parent component when an animation is finished.
+ *
+ * @param {string} currentAction - The name of the animation to play.
+ * @param {function} onAnimationFinished - A callback function to notify the parent
+ *   component when an animation is finished.
+ */
 function AvatarModel({ currentAction, onAnimationFinished }) {
   const modelRef = useRef();
   const previousAction = useRef(null);
 
-  const { scene, animations } = useGLTF("/animation-models/base-avatar.glb");
+  const { scene, animations } = useGLTF("/animation-models/base-avatar-compressed.glb", "https://www.gstatic.com/draco/v1/decoders/");
   const { actions } = useAnimations(animations, modelRef);
 
   // Aggressive Root Motion Fix: Removes drifting from all animations
