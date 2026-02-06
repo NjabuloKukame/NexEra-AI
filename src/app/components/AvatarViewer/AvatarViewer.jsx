@@ -60,9 +60,10 @@ useGLTF.preload("/animation-models/base-avatar-compressed.glb", "https://www.gst
  * @param {function} onAnimationFinished - A callback function to notify the parent
  *   component when an animation is finished.
  */
-function AvatarModel({ currentAction, onAnimationFinished }) {
+function AvatarModel({ currentAction, onAnimationFinished, isInSequence }) {
   const modelRef = useRef();
   const previousAction = useRef(null);
+  const sequenceTimerRef = useRef(null);
 
   const blobUrl = "https://mhzpdpvxqch3gpbk.public.blob.vercel-storage.com/base-avatar-compressed.glb";
 
@@ -83,6 +84,10 @@ function AvatarModel({ currentAction, onAnimationFinished }) {
     if (!actions || !currentAction) {
       if (previousAction.current && actions[previousAction.current]) {
         actions[previousAction.current].fadeOut(0.5);
+      }
+      if (sequenceTimerRef.current) {
+        clearTimeout(sequenceTimerRef.current);
+        sequenceTimerRef.current = null;
       }
       return;
     }
@@ -116,10 +121,22 @@ function AvatarModel({ currentAction, onAnimationFinished }) {
     } else {
       action.setLoop(THREE.LoopRepeat);
       action.play();
+
+      // Auto-stop looping animations: 3s for sequences, 15s for single actions
+      const timeout = isInSequence ? 3000 : 10000;
+      sequenceTimerRef.current = setTimeout(() => {
+        if (onAnimationFinished) onAnimationFinished();
+      }, timeout);
     }
 
     previousAction.current = currentAction;
-  }, [actions, currentAction, onAnimationFinished]);
+
+    return () => {
+      if (sequenceTimerRef.current) {
+        clearTimeout(sequenceTimerRef.current);
+      }
+    };
+  }, [actions, currentAction, onAnimationFinished, isInSequence]);
 
   // Shadow and Frustum Fix
   useEffect(() => {
@@ -144,6 +161,8 @@ function AvatarModel({ currentAction, onAnimationFinished }) {
 
 const AvatarViewer = forwardRef(function AvatarViewer(_, ref) {
   const controlsRef = useRef();
+  const animationQueue = useRef([]);
+  const isPlayingSequence = useRef(false);
   
   const [currentAction, setCurrentAction] = useState(null); 
   const [statusText, setStatusText] = useState("Waiting For Command.");
@@ -161,16 +180,77 @@ const AvatarViewer = forwardRef(function AvatarViewer(_, ref) {
     jog: "Jogging",
   };
 
+  const playNextInQueue = () => {
+    if (animationQueue.current.length === 0) {
+      isPlayingSequence.current = false;
+      setStatusText("Sequence Complete. Type Another Command.");
+      return;
+    }
+
+    const nextAction = animationQueue.current.shift();
+    setCurrentAction(nextAction);
+    setStatusText(`Performing: ${nextAction} (${animationQueue.current.length} remaining)`);
+  };
+
+  const handleAnimationFinished = () => {
+    if (isPlayingSequence.current) {
+      playNextInQueue();
+    } else {
+      setCurrentAction(null);
+      setStatusText("Animation Complete. Type Another Command.");
+    }
+  };
+
   useImperativeHandle(ref, () => ({
     playAnimation(action) {
       const target = actionMap[action];
       if (target) {
+        animationQueue.current = [];
+        isPlayingSequence.current = false;
         setCurrentAction(target);
         setStatusText(`Performing: ${target}`);
       } else {
         setStatusText(`Unsupported Command. Try: Walk, Wave ...`);
         setCurrentAction(null);
       }
+    },
+
+    playAnimationSequence(actions) {
+      const targets = actions.map(a => actionMap[a]).filter(Boolean);
+      if (targets.length === 0) {
+        setStatusText(`No valid actions in sequence.`);
+        return;
+      }
+
+      animationQueue.current = targets.slice(1);
+      isPlayingSequence.current = true;
+      setCurrentAction(targets[0]);
+      setStatusText(`Performing: ${targets[0]} (${animationQueue.current.length} remaining)`);
+    },
+    playAnimation(action) {
+      const target = actionMap[action];
+      if (target) {
+        animationQueue.current = [];
+        isPlayingSequence.current = false;
+        setCurrentAction(target);
+        setStatusText(`Performing: ${target}`);
+      } else {
+        setStatusText(`Unsupported Command. Try: Walk, Wave ...`);
+        setCurrentAction(null);
+      }
+    },
+
+    playAnimationSequence(actions) {
+      const targets = actions.map(a => actionMap[a]).filter(Boolean);
+      if (targets.length === 0) {
+        setStatusText(`No valid actions in sequence.`);
+        return;
+      }
+
+      animationQueue.current = targets.slice(1);
+      isPlayingSequence.current = true;
+      setCurrentAction(targets[0]);
+      setStatusText(`Performing: ${targets[0]} (${animationQueue.current.length} remaining)`);
     },
 
     toggleRotate() {
@@ -190,6 +270,8 @@ const AvatarViewer = forwardRef(function AvatarViewer(_, ref) {
 
     reset() {
       controlsRef.current?.reset();
+      animationQueue.current = [];
+      isPlayingSequence.current = false;
       setCurrentAction(null);
       setStatusText("Waiting For Command...");
     },
@@ -238,10 +320,8 @@ const AvatarViewer = forwardRef(function AvatarViewer(_, ref) {
         <Suspense fallback={<LoadingScene />}>
           <AvatarModel 
             currentAction={currentAction} 
-            onAnimationFinished={() => {
-              setCurrentAction(null); // Stop animating
-              setStatusText("Animation Complete. Type Another Command.");
-            }}
+            onAnimationFinished={handleAnimationFinished}
+            isInSequence={isPlayingSequence.current}
           />
         </Suspense>
 

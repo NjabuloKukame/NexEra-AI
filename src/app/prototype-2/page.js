@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { RotateCw, ZoomIn, RefreshCw, ZoomOut, Sparkles, Send, Loader2 } from 'lucide-react';
 import AvatarViewer from '../components/AvatarViewer/AvatarViewer';
 
@@ -9,8 +9,17 @@ export default function Prototype2() {
   const [executedCommand, setExecutedCommand] = useState('');
   const [aiExplanation, setAiExplanation] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [showHint, setShowHint] = useState(true);
 
   const viewerRef = useRef(null);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowHint(false);
+    }, 8000);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleExecute = async () => {
     if (!command.trim()) return;
@@ -28,8 +37,12 @@ export default function Prototype2() {
       setExecutedCommand(command);
       setAiExplanation(data.summary);
 
-
-      viewerRef.current?.playAnimation(data.action);
+      // Handle sequence or single action
+      if (data.actions && Array.isArray(data.actions)) {
+        viewerRef.current?.playAnimationSequence(data.actions);
+      } else {
+        viewerRef.current?.playAnimation(data.action);
+      }
 
     } catch (err) {
       console.error(err);
@@ -54,7 +67,7 @@ export default function Prototype2() {
             Command the Training Avatar
           </h1>
           <p className="text-black/60 text-lg max-w-2xl mx-auto">
-            Use natural language to control avatar actions in real-time
+            Use Natural Language To Control Avatar Actions In Real-Time. Also Chaining Of Animations is Supported!
           </p>
         </div>
 
@@ -90,7 +103,35 @@ export default function Prototype2() {
                 )}
               </button>
             </div>
-
+            {showHint && (
+              <div className="bg-blue-50 border border-blue-200 rounded-2xl p-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <div className="flex items-start gap-3">
+                  <div className="p-2 bg-blue-100 rounded-lg flex-shrink-0 mt-0.5">
+                    <svg className="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-blue-900 mb-2">
+                      Chain Animations Together
+                    </h3>
+                    <p className="text-sm text-blue-800 mb-3 leading-relaxed">
+                      You Can Chain Multiple Animations Using Natural Language Connectors Like <span className="font-mono bg-white px-2 py-1 rounded">"then"</span>, <span className="font-mono bg-white px-2 py-1 rounded">"and"</span>, or <span className="font-mono bg-white px-2 py-1 rounded">"followed by"</span>.
+                    </p>
+                    <div className="space-y-2">
+                      <div className="text-sm text-blue-800">
+                        <span className="font-semibold">Examples:</span>
+                      </div>
+                      <ul className="text-sm text-blue-800 space-y-1 ml-2">
+                        <li>✓ <span className="font-mono bg-white px-1.5 py-0.5 rounded text-xs">"Walk Then Wave"</span></li>
+                        <li>✓ <span className="font-mono bg-white px-1.5 py-0.5 rounded text-xs">"Jog And Salute And Point"</span></li>
+                        <li>✓ <span className="font-mono bg-white px-1.5 py-0.5 rounded text-xs">"Dance Followed by Jump"</span></li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>)
+            }
             {executedCommand && (
               <div className="bg-black/5 backdrop-blur-xl rounded-2xl border border-black/10 p-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
                 <div className="flex items-start gap-3 mb-4">
@@ -124,6 +165,8 @@ export default function Prototype2() {
                   'Drop Kick',
                   'Climb',
                   'Jog',
+                  'Walk Then Point',
+                  'Jog Then Salute Then Wave',
                 ].map((example) => (
                   <button
                     key={example}

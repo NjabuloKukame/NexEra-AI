@@ -36,21 +36,21 @@ export async function POST(req) {
                     - wave
                     - point
                     - dance
-                    -salute
-                    -dropKick
-                    -climb
-                    -jog
+                    - salute
+                    - dropKick
+                    - climb
+                    - jog
                     - jump
                     - walkForward
                     - walkBackward
                     - idle
 
                     Rules:
-                    - Choose the closest matching action.
+                    - For single actions, return: {"action": "actionName", "summary": "description"}
+                    - For sequences (e.g., "wave then jump"), return: {"actions": ["wave", "jump"], "summary": "description"}
+                    - Choose the closest matching action(s).
                     - If no action applies, return "idle".
                     - Respond ONLY in valid JSON.
-                    - JSON schema:
-                    { "action": string, "summary": string }
               `,
                         },
                         {
@@ -105,7 +105,14 @@ export async function POST(req) {
             'idle',
         ];
 
-        if (!allowedActions.includes(parsed.action)) {
+        // Handle sequence of actions
+        if (parsed.actions && Array.isArray(parsed.actions)) {
+            const validActions = parsed.actions.filter(a => allowedActions.includes(a));
+            if (validActions.length === 0) {
+                parsed.action = 'idle';
+                delete parsed.actions;
+            }
+        } else if (!allowedActions.includes(parsed.action)) {
             parsed.action = 'idle';
         }
 
