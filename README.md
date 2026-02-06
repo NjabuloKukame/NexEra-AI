@@ -1,36 +1,101 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# 🧠 AI-Driven 3D Training Visualization Platform
 
-## Getting Started
+This repository contains a web-based prototype platform that explores how AI, 3D visualization, and interactive avatars can be combined to support training, learning, and contextual understanding.
 
-First, run the development server:
+The project consists of two prototypes, each building on the previous one to demonstrate increasing levels of interactivity and intelligence.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+> **Note:** The focus of this work is clarity, feasibility, and learning, not visual perfection.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## 📌 Project Overview
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The platform demonstrates how:
+* **Natural language** can be interpreted into structured actions.
+* **3D avatars** can respond to AI-generated commands.
+* **Interactive 3D scenes** can enhance training and understanding.
 
-## Learn More
+The system is split into two main prototypes:
+1. **Prototype 1:** 3D asset visualization & interaction.
+2. **Prototype 2:** AI-driven animated training avatar.
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🧩 Prototype 1 – 3D Asset Visualization
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Description
+Prototype 1 focuses on rendering and interacting with 3D assets in a web environment. It demonstrates how static or semi-interactive 3D models can be viewed, inspected, and controlled using a browser-based 3D canvas.
 
-## Deploy on Vercel
+### Key Features
+* **Web-based 3D rendering** using Three.js.
+* **Camera controls** (rotate, zoom, reset).
+* **Clean separation** between UI and 3D scene.
+* **Foundation** for mapping real-world asset data to 3D representations.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Purpose
+This prototype establishes the visual and technical foundation for later AI-driven interaction.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## 🧑‍🏫 Prototype 2 – AI-Driven Training Avatar
+
+### Description
+Prototype 2 introduces a humanoid training avatar that responds to natural language commands interpreted by AI. Users can type commands such as:
+* *"Wave hello"*
+* *"Point at the extinguisher"*
+* *"Jump"*
+* *"Walk forward"*
+* *"Dance"*
+
+The system interprets these commands and plays the corresponding skeletal animation on the avatar in real time.
+
+### Tool 1: Natural Language Command Interpreter
+* Accepts free-form user input.
+* Uses AI logic to extract user intent.
+* Maps intent to predefined avatar actions.
+* Returns a short explanation of the action performed.
+
+### Tool 2: Interactive 3D Avatar Viewer
+* Renders a humanoid avatar in a WebGL canvas.
+* Plays animations stored in a single GLB file.
+* **Supports:** Camera rotation, Zoom in/out, and Scene reset.
+* Avatar remains anchored while animations play on the skeleton.
+
+---
+
+## 🛠️ Technologies Used
+
+### Frontend
+* **Next.js** (React)
+* **@react-three/fiber**
+* **@react-three/drei**
+* **Three.js**
+
+### 3D & Animation
+* **Blender** – Assembling avatar and animations.
+* **Mixamo** – Humanoid animation source.
+* **glTF / GLB** – Optimized 3D asset format.
+
+### AI
+* **Custom API route** for command interpretation.
+* **Natural language → action mapping**.
+* **Human-readable AI explanations**.
+
+---
+
+## ⚠️ Known Limitations
+* Animations are predefined: No procedural motion (physics-based).
+* No physics-based interaction: Limited interaction with objects.
+* Limited environmental awareness: The avatar is not aware of surroundings.
+* AI interpretation: Lightweight and rule-based for this prototype.
+* No voice input: Currently lacks real-time speech recognition.
+
+---
+
+##🔮 Next Steps & Improvements
+* Add a true idle animation state.
+* Introduce object-aware interactions.
+* Support chained commands (“Walk forward and wave”).
+* Add voice-based control.
+* Integrate real asset data (e.g. maintenance or training metadata).
+* Expand environments beyond a single avatar scene.
