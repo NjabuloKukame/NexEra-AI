@@ -9,8 +9,43 @@ import {
   Suspense,
 } from "react";
 import { Canvas } from "@react-three/fiber";
-import { OrbitControls, useGLTF, useAnimations } from "@react-three/drei";
+import { OrbitControls, useGLTF, useAnimations, Html } from "@react-three/drei";
 import * as THREE from "three";
+
+function LoadingScene() {
+  return (
+    <Html center>
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: '12px',
+        color: '#000',
+        fontFamily: 'system-ui, -apple-system, sans-serif'
+      }}>
+        <div style={{
+          width: '40px',
+          height: '40px',
+          border: '3px solid rgba(0, 0, 0, 0.1)',
+          borderTop: '3px solid #000',
+          borderRadius: '50%',
+          animation: 'spin 1s linear infinite'
+        }} />
+        <span style={{ fontSize: '14px', fontWeight: '500' }}>Loading Avatar...</span>
+      </div>
+      <style>{`
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      `}</style>
+    </Html>
+  );
+}
+
+// Preload avatar model for faster initial load
+useGLTF.preload("/animation-models/base-avatar.glb");
+
 function AvatarModel({ currentAction, onAnimationFinished }) {
   const modelRef = useRef();
   const previousAction = useRef(null);
@@ -184,7 +219,7 @@ const AvatarViewer = forwardRef(function AvatarViewer(_, ref) {
         <pointLight position={[10, 10, 10]} intensity={1.5} castShadow />
         <directionalLight position={[-5, 5, 5]} intensity={0.8} />
 
-        <Suspense fallback={null}>
+        <Suspense fallback={<LoadingScene />}>
           <AvatarModel 
             currentAction={currentAction} 
             onAnimationFinished={() => {

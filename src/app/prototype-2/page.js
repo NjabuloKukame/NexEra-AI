@@ -1,19 +1,21 @@
 "use client"
 
 import { useState, useRef } from 'react';
-import { RotateCw, ZoomIn, RefreshCw, ZoomOut, Sparkles, Send } from 'lucide-react';
+import { RotateCw, ZoomIn, RefreshCw, ZoomOut, Sparkles, Send, Loader2 } from 'lucide-react';
 import AvatarViewer from '../components/AvatarViewer/AvatarViewer';
 
 export default function Prototype2() {
   const [command, setCommand] = useState('');
   const [executedCommand, setExecutedCommand] = useState('');
   const [aiExplanation, setAiExplanation] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const viewerRef = useRef(null);
 
   const handleExecute = async () => {
     if (!command.trim()) return;
 
+    setIsLoading(true);
     try {
       const res = await fetch('/api/interpret-command', {
         method: 'POST',
@@ -34,6 +36,8 @@ export default function Prototype2() {
       setAiExplanation(
         'The avatar remains idle as the command could not be interpreted.'
       );
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -70,10 +74,20 @@ export default function Prototype2() {
 
               <button
                 onClick={handleExecute}
-                className="w-full bg-black text-white font-semibold py-4 px-6 rounded-xl hover:bg-black/90 transition-all flex items-center justify-center gap-2 group"
+                disabled={isLoading}
+                className="w-full bg-black text-white font-semibold py-4 px-6 rounded-xl hover:bg-black/90 transition-all flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <span>Execute Command</span>
-                <Send className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                {isLoading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span>Processing Command</span>
+                  </>
+                ) : (
+                  <>
+                    <span>Execute Command</span>
+                    <Send className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                  </>
+                )}
               </button>
             </div>
 

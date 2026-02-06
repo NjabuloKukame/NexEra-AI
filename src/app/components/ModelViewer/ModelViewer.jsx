@@ -3,6 +3,12 @@
 import { forwardRef, useImperativeHandle, useRef } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, useGLTF } from '@react-three/drei';
+import { ASSET_MAP } from '@/app/lib/assets';
+
+// Preload common models for faster loading
+Object.values(ASSET_MAP).forEach(asset => {
+  if (asset && asset.url) useGLTF.preload(asset.url);
+});
 
 function Model({ url }) {
   const { scene } = useGLTF(url);
