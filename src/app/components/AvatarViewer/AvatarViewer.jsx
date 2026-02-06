@@ -49,7 +49,7 @@ function LoadingScene() {
 }
 
 // Preload avatar model for faster initial load
-useGLTF.preload("/animation-models/base-avatar-compressed.glb");
+useGLTF.preload("/animation-models/base-avatar-compressed.glb", "https://www.gstatic.com/draco/v1/decoders/");
 
 /**
  * A React component that renders an avatar model and plays animations based on the
@@ -64,7 +64,9 @@ function AvatarModel({ currentAction, onAnimationFinished }) {
   const modelRef = useRef();
   const previousAction = useRef(null);
 
-  const { scene, animations } = useGLTF("/animation-models/base-avatar-compressed.glb", "https://www.gstatic.com/draco/v1/decoders/");
+  const blobUrl = "https://mhzpdpvxqch3gpbk.public.blob.vercel-storage.com/base-avatar-compressed.glb";
+
+  const { scene, animations } = useGLTF(blobUrl, "https://www.gstatic.com/draco/v1/decoders/");
   const { actions } = useAnimations(animations, modelRef);
 
   // Aggressive Root Motion Fix: Removes drifting from all animations
@@ -144,7 +146,7 @@ const AvatarViewer = forwardRef(function AvatarViewer(_, ref) {
   const controlsRef = useRef();
   
   const [currentAction, setCurrentAction] = useState(null); 
-  const [statusText, setStatusText] = useState("Waiting For Command...");
+  const [statusText, setStatusText] = useState("Waiting For Command.");
 
   const actionMap = {
     walkForward: "Walking",
