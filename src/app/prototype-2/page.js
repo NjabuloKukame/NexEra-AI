@@ -10,16 +10,25 @@ export default function Prototype2() {
   const [aiExplanation, setAiExplanation] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showHint, setShowHint] = useState(true);
+  const [countdown, setCountdown] = useState(15);
 
   const viewerRef = useRef(null);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowHint(false);
-    }, 8000);
+    if (!showHint) return;
 
-    return () => clearTimeout(timer);
-  }, []);
+    const interval = setInterval(() => {
+      setCountdown(prev => {
+        if (prev <= 1) {
+          setShowHint(false);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [showHint]);
 
   const handleExecute = async () => {
     if (!command.trim()) return;
@@ -112,9 +121,14 @@ export default function Prototype2() {
                     </svg>
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-blue-900 mb-2">
-                      Chain Animations Together
-                    </h3>
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="text-lg font-semibold text-blue-900">
+                        Chain Animations Together
+                      </h3>
+                      <span className="text-xs font-mono bg-blue-100 text-blue-700 px-2 py-1 rounded">
+                        {countdown}s
+                      </span>
+                    </div>
                     <p className="text-sm text-blue-800 mb-3 leading-relaxed">
                       You Can Chain Multiple Animations Using Natural Language Connectors Like <span className="font-mono bg-white px-2 py-1 rounded">"then"</span>, <span className="font-mono bg-white px-2 py-1 rounded">"and"</span>, or <span className="font-mono bg-white px-2 py-1 rounded">"followed by"</span>.
                     </p>

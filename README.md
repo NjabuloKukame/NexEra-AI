@@ -97,15 +97,11 @@ Groq is used to interpret natural language commands and map them to structured a
     * Low latency, ideal for interactive UIs.
     * Accessed via its OpenAI-compatible API endpoint.
 
-### Hugging Face (Model Access & Experimentation)
-Hugging Face is used for:
-* **Experimenting** with NLP models.
-* **Rapid prototyping** of language understanding logic.
-* **Model testing** and comparison during development.
-
-**Hugging Face complements Groq by providing:**
-* Easy access to open-source models.
-* A flexible experimentation environment.
+### Imagga (Visual Intelligence & Image Recognition)
+Imagga is used for:
+* **Automated Image Tagging**: Instantly generating descriptive keywords for uploaded images.
+* **Visual Content Analysis**: Extracting meaningful data from pixel content to understand the context of the user's photos.
+* **Rapid Prototyping**: Leveraging a stable, production-ready computer vision API to accelerate development.
 
 ---
 
